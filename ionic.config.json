@@ -1,0 +1,7 @@
+{
+  "name": "Astrokalender",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
