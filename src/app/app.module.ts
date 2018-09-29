@@ -22,7 +22,6 @@ import { CalendarModule } from 'ion2-calendar';
     IonicModule.forRoot(MyApp),
     HttpClientModule,
     CalendarModule
-  
   ],
   bootstrap: [IonicApp],
   entryComponents: [
