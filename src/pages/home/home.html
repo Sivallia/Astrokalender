@@ -8,11 +8,6 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-calendar [(ngModel)]="date"
-  (onChange)="onChange($event)"
-  [type]="type"
-  [format]="'YYYY-MM-DD'">
-</ion-calendar>
 
 <ion-calendar [(ngModel)]="dateMulti"
               [options]="optionsMulti"
