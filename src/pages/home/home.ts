@@ -3,6 +3,7 @@ import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 import moment from 'moment';
 import { RestProvider } from '../../providers/rest';
+import { convertUrlToDehydratedSegments } from 'ionic-angular/umd/navigation/url-serializer';
 
 @Component({
   selector: 'page-home',
@@ -76,6 +77,7 @@ export class HomePage {
           subTitle: this.ueberfluegeAnzahl[date].toString(),
       })
     }
+    console.log(this.ueberfluegeProTag);
   }
 
   countUeberfluege(overpass) {
@@ -91,12 +93,21 @@ export class HomePage {
   }
 
   putOverpassDetails(info, overpass) {
-    let timestamp = (overpass['startUTC'] * 1000).toString();
+    let utc = moment.utc(overpass['startUTC'] * 1000);
+    let timestamp = utc.format('YYYY-MM-DD');
+    let details = {
+      satname: info['satname'],
+      date: utc.format('LL'),
+      time: utc.format('LTS'),
+      direction: overpass['startAzCompass'],
+      duration: overpass['duration']
+    };
+
     if (timestamp in this.ueberfluegeProTag) {
-      
+      this.ueberfluegeProTag[timestamp].push(details);
     }
     else {
-      
+      this.ueberfluegeProTag[timestamp] = [details];
     }
   }
 
