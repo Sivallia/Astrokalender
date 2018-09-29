@@ -12,7 +12,9 @@
 <ion-calendar [(ngModel)]="dateMulti"
               [options]="optionsMulti"
               [type]="type"
-              [format]="'YYYY-MM-DD'">
+              [format]="'YYYY-MM-DD'"
+              (onSelect)="onSelect($event)"
+              (onChange)="onChange($event)">
 </ion-calendar>
 
   <button ion-button secondary menuToggle>Toggle Menu</button>

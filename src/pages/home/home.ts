@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 import moment from 'moment';
 import { convertUrlToDehydratedSegments } from 'ionic-angular/umd/navigation/url-serializer';
@@ -11,6 +11,7 @@ import { convertUrlToDehydratedSegments } from 'ionic-angular/umd/navigation/url
 export class HomePage {
 
   type: 'string';
+  events=new Map< number,any>();
   dateMulti: String[] = [];
   optionsMulti: CalendarComponentOptions = {
     pickMode: 'multi',
@@ -26,11 +27,25 @@ export class HomePage {
   ueberfluegeProTag = {}
   ueberfluegeAnzahl = {}
 
-  constructor(public navCtrl: NavController) {
+
+  constructor(public navCtrl: NavController, public modCtrl: ModalController) {
     this.computeUeberfluege(this.rawData);
   }
   onChange($event) {
     console.log($event);
+    this.dateMulti=[];
+  }
+
+  onSelect($event) {
+    console.log($event); 
+  
+    let testDescription={NoradID:25544,Name:'SPACE STATION',StartUTC:153817222,EndUTC:153817223,Duration:1}
+
+    this.events.set(1538172000,testDescription);
+
+    //const myModal = this.modCtrl.create('EventDescriptionPage', this.rawData);
+    const myModal = this.modCtrl.create('EventDescriptionPage', testDescription);
+    myModal.present();
   }
 
   computeUeberfluege(apiData) {
