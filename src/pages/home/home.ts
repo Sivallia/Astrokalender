@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
+import moment from 'moment';
 
 @Component({
   selector: 'page-home',
@@ -8,9 +9,9 @@ import { CalendarComponentOptions } from 'ion2-calendar';
 })
 export class HomePage {
 
-  public type: 'string';
+  type: 'string';
   dateMulti: String[] = [];
-  public optionsMulti: CalendarComponentOptions = {
+  optionsMulti: CalendarComponentOptions = {
     pickMode: 'multi',
     daysConfig: [
       {
@@ -25,13 +26,35 @@ export class HomePage {
   ueberfluegeAnzahl = {}
 
   constructor(public navCtrl: NavController) {
-    console.log(this.rawData['info']['satname']);
-    for (let overpass of this.rawData['passes']) {
-      console.log(overpass['startUTC']);
-    }
+    this.computeUeberfluege(this.rawData);
   }
   onChange($event) {
     console.log($event);
+  }
+
+  computeUeberfluege(apiData) {
+    console.log(apiData['info']['satname']);
+    for (let overpass of apiData['passes']) {
+      console.log(moment(overpass['startUTC']));
+      let date = moment.utc(overpass['startUTC'] * 1000);
+      let timestamp = date.format('YYYY-MM-DD');
+      console.log(timestamp);
+      if (timestamp in this.ueberfluegeAnzahl) {
+        this.ueberfluegeAnzahl[timestamp] += 1;
+      }
+      else {
+        this.ueberfluegeAnzahl[timestamp] = 1;
+      }
+    }
+
+    this.optionsMulti.daysConfig = [];
+    for (let date in this.ueberfluegeAnzahl) {
+      this.optionsMulti.daysConfig.push({
+          date: moment(date, 'YYYY-MM-DD').toDate(),
+          marked: true,
+          subTitle: this.ueberfluegeAnzahl[date].toString(),
+      })
+    }
   }
 
   rawData = {
