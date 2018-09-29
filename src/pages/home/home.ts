@@ -35,16 +35,8 @@ export class HomePage {
   computeUeberfluege(apiData) {
     console.log(apiData['info']['satname']);
     for (let overpass of apiData['passes']) {
-      console.log(moment(overpass['startUTC']));
-      let date = moment.utc(overpass['startUTC'] * 1000);
-      let timestamp = date.format('YYYY-MM-DD');
-      console.log(timestamp);
-      if (timestamp in this.ueberfluegeAnzahl) {
-        this.ueberfluegeAnzahl[timestamp] += 1;
-      }
-      else {
-        this.ueberfluegeAnzahl[timestamp] = 1;
-      }
+      this.countUeberfluege(overpass);
+      this.putOverpassDetails(apiData['info'], overpass);
     }
 
     this.optionsMulti.daysConfig = [];
@@ -54,6 +46,29 @@ export class HomePage {
           marked: true,
           subTitle: this.ueberfluegeAnzahl[date].toString(),
       })
+    }
+  }
+
+  countUeberfluege(overpass) {
+    console.log(moment(overpass['startUTC']));
+      let date = moment.utc(overpass['startUTC'] * 1000);
+      let timestamp = date.format('YYYY-MM-DD');
+      console.log(timestamp);
+      if (timestamp in this.ueberfluegeAnzahl) {
+        this.ueberfluegeAnzahl[timestamp] += 1;
+      }
+      else {
+        this.ueberfluegeAnzahl[timestamp] = 1;
+      }
+  }
+
+  putOverpassDetails(info, overpass) {
+    let timestamp = (overpass['startUTC'] * 1000).toString();
+    if (timestamp in this.ueberfluegeProTag) {
+      
+    }
+    else {
+      
     }
   }
 
