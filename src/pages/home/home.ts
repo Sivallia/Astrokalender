@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 
 @Component({
@@ -9,6 +9,7 @@ import { CalendarComponentOptions } from 'ion2-calendar';
 export class HomePage {
 
   public type: 'string';
+  public events=new Map< number,any>();
   dateMulti: String[] = [];
   public optionsMulti: CalendarComponentOptions = {
     pickMode: 'multi',
@@ -24,7 +25,7 @@ export class HomePage {
   ueberfluegeProTag = {}
   ueberfluegeAnzahl = {}
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, public modCtrl: ModalController) {
     console.log(this.rawData['info']['satname']);
     for (let overpass of this.rawData['passes']) {
       console.log(overpass['startUTC']);
@@ -32,7 +33,21 @@ export class HomePage {
   }
   onChange($event) {
     console.log($event);
+    this.dateMulti=[];
   }
+
+  onSelect($event) {
+    console.log($event); 
+  
+    let testDescription={NoradID:25544,Name:'SPACE STATION',StartUTC:153817222,EndUTC:153817223,Duration:1}
+
+    this.events.set(1538172000,testDescription);
+
+    //const myModal = this.modCtrl.create('EventDescriptionPage', this.rawData);
+    const myModal = this.modCtrl.create('EventDescriptionPage', testDescription);
+    myModal.present();
+  }
+
 
   rawData = {
     "info": {

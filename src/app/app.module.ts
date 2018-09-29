@@ -10,6 +10,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpClientModule } from '@angular/common/http';
 import { RestProvider } from '../providers/rest';
+import { CalendarModule } from 'ion2-calendar';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { RestProvider } from '../providers/rest';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HttpClientModule
+    HttpClientModule,
+    CalendarModule
   
   ],
   bootstrap: [IonicApp],
