@@ -29,8 +29,9 @@ export class RestProvider {
       25104,25078,25077,25043,25042,24967,24966,24950,24948,24946,24945,24944,24926,24925,24907,24905,24903,24873,24871,24870,24869,24842,24841,24839,24836,24796,24795,24793];
   }
 
-  getvisualpasses() {
+  getvisualpasses(NoradID:number) {
     console.log(this.apiUrl)
+    this.id=NoradID;
     return new Promise(resolve => {
       this.http.get(this.apiUrl).subscribe(data => {
 

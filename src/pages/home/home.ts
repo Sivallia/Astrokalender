@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 import moment from 'moment';
+import { RestProvider } from '../../providers/rest';
 
 @Component({
   selector: 'page-home',
@@ -27,9 +28,21 @@ export class HomePage {
   ueberfluegeAnzahl = {}
 
 
-  constructor(public navCtrl: NavController, public modCtrl: ModalController) {
-    this.computeUeberfluege(this.rawData);
+  constructor(public navCtrl: NavController, public modCtrl: ModalController, public restC:RestProvider) {
   }
+  
+  ionViewWillLoad() {
+    for(let i of this.restC.Iridium_IDs){
+      this.restC.getvisualpasses(i).then((data)=>{
+        this.computeUeberfluege(data);
+      })  
+    }
+  }
+
+  ionViewDidLoad() {
+    this.displayOverpassesOnCalendar();
+  }
+
   onChange($event) {
     console.log($event);
     this.dateMulti=[];
@@ -48,12 +61,13 @@ export class HomePage {
   }
 
   computeUeberfluege(apiData) {
-    console.log(apiData['info']['satname']);
     for (let overpass of apiData['passes']) {
       this.countUeberfluege(overpass);
       this.putOverpassDetails(apiData['info'], overpass);
     }
+  }
 
+  displayOverpassesOnCalendar(){
     this.optionsMulti.daysConfig = [];
     for (let date in this.ueberfluegeAnzahl) {
       this.optionsMulti.daysConfig.push({
@@ -65,16 +79,15 @@ export class HomePage {
   }
 
   countUeberfluege(overpass) {
-    console.log(moment(overpass['startUTC']));
-      let date = moment.utc(overpass['startUTC'] * 1000);
-      let timestamp = date.format('YYYY-MM-DD');
-      console.log(timestamp);
-      if (timestamp in this.ueberfluegeAnzahl) {
-        this.ueberfluegeAnzahl[timestamp] += 1;
-      }
-      else {
-        this.ueberfluegeAnzahl[timestamp] = 1;
-      }
+    let date = moment.utc(overpass['startUTC'] * 1000);
+    let timestamp = date.format('YYYY-MM-DD');
+    console.log(timestamp);
+    if (timestamp in this.ueberfluegeAnzahl) {
+      this.ueberfluegeAnzahl[timestamp] += 1;
+    }
+    else {
+      this.ueberfluegeAnzahl[timestamp] = 1;
+    }
   }
 
   putOverpassDetails(info, overpass) {
