@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>event_description</ion-title>
+    <ion-title>Überflüge</ion-title>
     <ion-buttons end>
       <button ion-button (click)="closeModal()">X</button>
       </ion-buttons>
@@ -17,7 +17,34 @@
 
 
 <ion-content padding>
-
-  {{Name}}
-
+    <ion-grid>
+        <ion-row>
+          <ion-col>
+            Zeit
+          </ion-col>
+          <ion-col>
+            Name
+          </ion-col>
+          <ion-col>
+            Dauer
+          </ion-col>
+          <ion-col>
+            Richtung
+          </ion-col>        
+        </ion-row>
+        <ion-row *ngFor='let ueberflug of ueberfluege'>
+          <ion-col>
+            {{ueberflug.time}}
+          </ion-col>
+          <ion-col>
+            {{ueberflug.satname}}
+          </ion-col>
+          <ion-col>
+            {{ueberflug.duration}}
+          </ion-col>
+          <ion-col>
+            {{ueberflug.direction}}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 </ion-content>

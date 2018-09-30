@@ -18,8 +18,7 @@ export class HomePage {
     daysConfig: [
       {
         date: new Date(2018,0,10),
-        marked: true,
-        subTitle: "how are you",
+        marked: true
       }
     ]
   }
@@ -55,14 +54,14 @@ export class HomePage {
   }
 
   onSelect($event) {
-    console.log($event); 
-  
-    let testDescription={NoradID:25544,Name:'SPACE STATION',StartUTC:153817222,EndUTC:153817223,Duration:1}
-
-    this.events.set(1538172000,testDescription);
+    console.log($event);
+    
+    let timestamp = moment.utc($event.time).format('YYYY-MM-DD');
+    let ueberfluege = this.ueberfluegeProTag[timestamp];
+    console.log(ueberfluege);
 
     //const myModal = this.modCtrl.create('EventDescriptionPage', this.rawData);
-    const myModal = this.modCtrl.create('EventDescriptionPage', testDescription);
+    const myModal = this.modCtrl.create('EventDescriptionPage', {data:ueberfluege});
     myModal.present();
   }
 

@@ -14,8 +14,9 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
   templateUrl: 'event-description.html',
 })
 export class EventDescriptionPage {
-
+  public ueberfluege = [];
   constructor(public navCtrl: NavController, public navParams: NavParams, public view: ViewController) {
+    this.ueberfluege = navParams.get('data');
   }
 
   ionViewDidLoad() {
