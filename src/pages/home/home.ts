@@ -3,6 +3,7 @@ import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 import moment from 'moment';
 import { RestProvider } from '../../providers/rest';
+import { LoadingController } from 'ionic-angular';
 
 @Component({
   selector: 'page-home',
@@ -27,21 +28,33 @@ export class HomePage {
   ueberfluegeProTag = {}
   ueberfluegeAnzahl = {}
 
+  presentLoading() {
+    const loader = this.loadingCtrl.create({
+      content: "Lade Sattelitendaten...",
+      spinner: 'crescent'
+    });
+    loader.present();
+    return loader;
+  }
 
-  constructor(public navCtrl: NavController, public modCtrl: ModalController, public restC:RestProvider) {
+  constructor(public navCtrl: NavController, public modCtrl: ModalController, public restC:RestProvider, public loadingCtrl: LoadingController) {
   }
   
   ionViewWillLoad() {
+    var loader = this.presentLoading();
     var self = this;
-    Promise.all(self.restC.Iridium_IDs.map(ID => {
+    const idCount = self.restC.Iridium_IDs.length;
+    Promise.all(self.restC.Iridium_IDs.map((ID, i) => {
       return self.restC.getvisualpasses(ID).then(data => {
+        let progress = Math.round(i / idCount * 100);
+        loader.setContent("Loading Sattelite Data: " + progress.toString() + "%");
         return self.computeUeberfluege(self, data);
       });
     })).then(result => {
       self.displayOverpassesOnCalendar(self);
-      console.log("hallo");
       console.log(self.optionsMulti.daysConfig);
       self.loaded = true;
+      loader.dismiss()
     });
   }
 
