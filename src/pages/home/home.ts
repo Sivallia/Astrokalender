@@ -3,16 +3,15 @@ import { NavController, ModalController } from 'ionic-angular';
 import { CalendarComponentOptions } from 'ion2-calendar';
 import moment from 'moment';
 import { RestProvider } from '../../providers/rest';
-import { convertUrlToDehydratedSegments } from 'ionic-angular/umd/navigation/url-serializer';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-
+  loaded: boolean = false;
   type: 'string';
-  events=new Map< number,any>();
+  events = new Map<number, any>();
   dateMulti: String[] = [];
   optionsMulti: CalendarComponentOptions = {
     pickMode: 'multi',
@@ -33,15 +32,21 @@ export class HomePage {
   }
   
   ionViewWillLoad() {
-    for(let i of this.restC.Iridium_IDs){
-      this.restC.getvisualpasses(i).then((data)=>{
-        this.computeUeberfluege(data);
-      })  
-    }
+    var self = this;
+    Promise.all(self.restC.Iridium_IDs.map(ID => {
+      return self.restC.getvisualpasses(ID).then(data => {
+        return self.computeUeberfluege(self, data);
+      });
+    })).then(result => {
+      self.displayOverpassesOnCalendar(self);
+      console.log("hallo");
+      console.log(self.optionsMulti.daysConfig);
+      self.loaded = true;
+    });
   }
 
   ionViewDidLoad() {
-    this.displayOverpassesOnCalendar();
+    //this.displayOverpassesOnCalendar();
   }
 
   onChange($event) {
@@ -61,38 +66,33 @@ export class HomePage {
     myModal.present();
   }
 
-  computeUeberfluege(apiData) {
+  computeUeberfluege(self, apiData) {
     for (let overpass of apiData['passes']) {
-      this.countUeberfluege(overpass);
-      this.putOverpassDetails(apiData['info'], overpass);
+      self.countUeberfluege(self, overpass);
+      self.putOverpassDetails(self, apiData['info'], overpass);
     }
   }
 
-  displayOverpassesOnCalendar(){
-    this.optionsMulti.daysConfig = [];
-    for (let date in this.ueberfluegeAnzahl) {
-      this.optionsMulti.daysConfig.push({
-          date: moment(date, 'YYYY-MM-DD').toDate(),
-          marked: true,
-          subTitle: this.ueberfluegeAnzahl[date].toString(),
-      })
-    }
-    console.log(this.ueberfluegeProTag);
+  displayOverpassesOnCalendar(self) {
+    self.optionsMulti.daysConfig = Object.keys(self.ueberfluegeAnzahl).map(date => ({
+      date: moment(date, 'YYYY-MM-DD').toDate(),
+      marked: true,
+      subTitle: self.ueberfluegeAnzahl[date].toString(),
+    }));
   }
 
-  countUeberfluege(overpass) {
+  countUeberfluege(self, overpass) {
     let date = moment.utc(overpass['startUTC'] * 1000);
     let timestamp = date.format('YYYY-MM-DD');
-    console.log(timestamp);
-    if (timestamp in this.ueberfluegeAnzahl) {
-      this.ueberfluegeAnzahl[timestamp] += 1;
+    if (timestamp in self.ueberfluegeAnzahl) {
+      self.ueberfluegeAnzahl[timestamp] += 1;
     }
     else {
-      this.ueberfluegeAnzahl[timestamp] = 1;
+      self.ueberfluegeAnzahl[timestamp] = 1;
     }
   }
 
-  putOverpassDetails(info, overpass) {
+  putOverpassDetails(self, info, overpass) {
     let utc = moment.utc(overpass['startUTC'] * 1000);
     let timestamp = utc.format('YYYY-MM-DD');
     let details = {
@@ -103,11 +103,11 @@ export class HomePage {
       duration: overpass['duration']
     };
 
-    if (timestamp in this.ueberfluegeProTag) {
-      this.ueberfluegeProTag[timestamp].push(details);
+    if (timestamp in self.ueberfluegeProTag) {
+      self.ueberfluegeProTag[timestamp].push(details);
     }
     else {
-      this.ueberfluegeProTag[timestamp] = [details];
+      self.ueberfluegeProTag[timestamp] = [details];
     }
   }
 
